@@ -2,10 +2,12 @@ import httpProxy from "http-proxy";
 import http from "node:http";
 
 import { isAuthenticated } from "./auth.js";
+import { logger } from "./logging.js";
 
 const proxy = httpProxy.createProxyServer({});
 
 const server = http.createServer((req, res) => {
+  logger.info(`HTTP ${req.method} ${req.url}`);
   const _isAuthenticated = isAuthenticated(req.headers.authorization);
   if (!_isAuthenticated) {
     res.writeHead(401, {
