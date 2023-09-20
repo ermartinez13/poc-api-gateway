@@ -1,9 +1,21 @@
 import httpProxy from "http-proxy";
 import http from "node:http";
 
+import { isAuthenticated } from "./auth.js";
+
 const proxy = httpProxy.createProxyServer({});
 
 const server = http.createServer((req, res) => {
+  const _isAuthenticated = isAuthenticated(req.headers.authorization);
+  if (!_isAuthenticated) {
+    res.writeHead(401, {
+      "WWW-Authenticate": "Basic realm=Services gateway",
+      "Content-Type": "text/plain",
+    });
+    res.end("401 Unauthorized");
+    return;
+  }
+
   if (req.url.startsWith("/foo")) {
     req.url = req.url.replace("/foo", "");
     proxy.web(req, res, {
