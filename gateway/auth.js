@@ -9,7 +9,9 @@ export function isAuthenticated(authHeader) {
     return false;
   }
 
+  /* user id and password are sent over as text that is base64 encoded */
   const encodedCredentials = authHeader.split(" ")[1];
+  /* decode base64 string by first converting to sequence of bytes that then gets converted to utf-8 string */
   const decodedCredentials = Buffer.from(encodedCredentials, "base64").toString(
     "utf-8"
   );

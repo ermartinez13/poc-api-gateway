@@ -8,8 +8,11 @@ const proxy = httpProxy.createProxyServer({});
 
 const server = http.createServer((req, res) => {
   logger.info(`HTTP ${req.method} ${req.url}`);
+
   const _isAuthenticated = isAuthenticated(req.headers.authorization);
+
   if (!_isAuthenticated) {
+    /* inform client which authentication schema is being used */
     res.writeHead(401, {
       "WWW-Authenticate": "Basic realm=Services gateway",
       "Content-Type": "text/plain",
@@ -18,6 +21,10 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  /**
+   * http.IncomingMessage.url property holds everything
+   * that comes after the authority section of a full URL
+   */
   if (req.url.startsWith("/foo")) {
     req.url = req.url.replace("/foo", "");
     proxy.web(req, res, {
